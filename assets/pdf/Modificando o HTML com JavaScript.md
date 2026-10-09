@@ -38,7 +38,7 @@ Exemplo de `<script>`:
 //Javascript
     function registrar(){
         let cliente = document.querySelector("input").value;
-        document.querySelector("p").innerHTML = `Novo registro: ${nome}`;
+        document.querySelector("p").innerHTML = `Novo registro: ${cliente}`;
     }
 </script>
 ```
