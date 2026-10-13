@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2ead7">
+  <meta name="description" content="Um jogo curto para praticar funções e parâmetros em JavaScript com receitas de bolo.">
+  <title>Função Bolo — jogo de JavaScript</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">✿</span>
+      <div>
+        <h1>Função Bolo</h1>
+        <p>Uma receita de cada vez.</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <p id="progress" class="progress-label">0 de 24 receitas</p>
+      <button id="reset" class="text-button" type="button">zerar progresso</button>
+    </div>
+  </header>
+
+  <nav id="nav" class="levels" aria-label="Fases do jogo"></nav>
+
+  <main class="layout">
+    <section class="panel challenge" aria-labelledby="titulo">
+      <div class="section-label">RECEITA <span id="fase">01 / 24</span></div>
+      <h2 id="titulo">Carregando receita...</h2>
+      <p id="texto" class="instruction"></p>
+      <p class="fill-note">Complete apenas o trecho destacado. Ele pode pedir um nome, parâmetro ou código completo.</p>
+      <pre id="code" class="code-panel" aria-label="Código JavaScript"></pre>
+      <div class="actions">
+        <button id="go" class="button primary" type="button">Testar receita</button>
+        <button id="ans" class="button secondary" type="button">Ver solução</button>
+      </div>
+      <p id="err" class="error" role="alert"></p>
+      <div class="feedback" aria-live="polite" aria-atomic="true">
+        <span id="cake" class="cake" aria-hidden="true"></span>
+        <p id="msg"></p>
+      </div>
+    </section>
+
+    <aside class="workbench" aria-label="Pedido e bancada">
+      <section class="panel order">
+        <h3><span aria-hidden="true">▤</span> Pedido</h3>
+        <div id="want" class="tiles"></div>
+      </section>
+      <section class="panel bench">
+        <h3><span aria-hidden="true">♨</span> Sua bancada</h3>
+        <div id="have" class="tiles"><p class="empty">Execute sua receita para ver o resultado.</p></div>
+      </section>
+    </aside>
+  </main>
+
+  <iframe id="runner" title="Execução isolada do código" sandbox="allow-scripts" hidden></iframe>
+  <script src="script.js"></script>
+</body>
+</html>
