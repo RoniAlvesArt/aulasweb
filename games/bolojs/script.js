@@ -47,6 +47,8 @@ let drafts = {};
 let input = null;
 let displayVersion = 0;
 let requestId = 0;
+const MAX_SOLUTION_USES = 5;
+let solutionUses = 0;
 const pendingRuns = new Map();
 const runner = $('runner');
 
@@ -55,6 +57,10 @@ try {
   completed = new Set(JSON.parse(saved).filter(index => Number.isInteger(index) && index >= 0 && index < LEVELS.length));
 } catch { completed = new Set(); }
 try { drafts = JSON.parse(localStorage.getItem('funcao-bolo-drafts') || '{}'); } catch { drafts = {}; }
+try {
+  const savedUses = Number(localStorage.getItem('funcao-bolo-solution-uses'));
+  solutionUses = Number.isInteger(savedUses) ? Math.min(MAX_SOLUTION_USES, Math.max(0, savedUses)) : 0;
+} catch { solutionUses = 0; }
 
 // O código é executado em um iframe isolado, sem acesso à página principal.
 const runnerSource = `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; connect-src 'none'; img-src 'none'; style-src 'none'; form-action 'none'; base-uri 'none'"></head><body><script>
@@ -100,7 +106,22 @@ function saveState() {
   try {
     localStorage.setItem('funcao-bolo-progress', JSON.stringify([...completed]));
     localStorage.setItem('funcao-bolo-drafts', JSON.stringify(drafts));
+    localStorage.setItem('funcao-bolo-solution-uses', String(solutionUses));
   } catch { /* O jogo continua funcionando se o armazenamento estiver indisponível. */ }
+}
+
+function updateSolutionCounter() {
+  const exhausted = solutionUses >= MAX_SOLUTION_USES;
+  $('solution-count').textContent = exhausted
+    ? `Soluções usadas: ${solutionUses}/${MAX_SOLUTION_USES}. Limite atingido.`
+    : `Soluções usadas: ${solutionUses}/${MAX_SOLUTION_USES}.`;
+  $('solution-lamps').querySelectorAll('.solution-lamp').forEach((lamp, index) => {
+    lamp.classList.toggle('used', index < solutionUses);
+  });
+  $('ans').disabled = exhausted;
+  $('ans').title = exhausted
+    ? `Você já usou as ${MAX_SOLUTION_USES} soluções disponíveis.`
+    : `Você usou ${solutionUses} de ${MAX_SOLUTION_USES} soluções disponíveis.`;
 }
 
 function highestCompleted() {
@@ -257,16 +278,20 @@ async function checkAnswer() {
 
 $('go').addEventListener('click', checkAnswer);
 $('ans').addEventListener('click', () => {
+  if (!input || solutionUses >= MAX_SOLUTION_USES) return;
+  solutionUses++;
   input.value = LEVELS[current].s;
   drafts[current] = input.value;
-  saveState(); fitInput(); $('msg').replaceChildren(); $('cake').textContent = '';
+  saveState(); fitInput(); updateSolutionCounter(); $('msg').replaceChildren(); $('cake').textContent = '';
   void showResult(); input.focus();
 });
 $('reset').addEventListener('click', () => {
   if (!window.confirm('Apagar o progresso e começar da primeira fase?')) return;
   completed.clear(); drafts = {}; input = null; current = 0;
+  solutionUses = 0;
   try { localStorage.removeItem('fb'); } catch { /* ignorado */ }
   saveState();
+  updateSolutionCounter();
   levelAt(0);
 });
 
@@ -275,6 +300,7 @@ if (malformed !== -1) {
   $('titulo').textContent = 'Erro na configuração';
   $('texto').textContent = `A fase ${malformed + 1} precisa ter exatamente um espaço de resposta.`;
 } else {
+  updateSolutionCounter();
   current = Math.min(Math.max(0, highestCompleted() + 1), LEVELS.length - 1);
   levelAt(current);
 }

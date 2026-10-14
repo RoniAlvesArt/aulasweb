@@ -135,6 +135,11 @@ h2 { margin-bottom: 9px; font-family: Georgia, "Times New Roman", serif; font-si
 .primary:hover { background: var(--tomato-dark); }
 .secondary { background: #ede3cc; }
 .secondary:hover { background: #e5d4b4; }
+.solution-status { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-top: 10px; color: var(--muted); font-size: 11px; }
+.solution-lamps { display: inline-flex; gap: 3px; font-size: 17px; line-height: 1; }
+.solution-lamp { transition: filter .2s ease, opacity .2s ease; }
+.solution-lamp.used { filter: grayscale(1); opacity: .3; }
+.button:disabled { cursor: not-allowed; opacity: .55; box-shadow: none; }
 .error { min-height: 0; margin: 10px 0 0; color: var(--error); font-size: 12px; white-space: normal; overflow-wrap: anywhere; }
 .error:empty { display: none; }
 .feedback { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
